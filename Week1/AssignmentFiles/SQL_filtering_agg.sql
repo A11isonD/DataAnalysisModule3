@@ -7,10 +7,16 @@ USE coffeeshop_db;
 
 -- Q1) Compute total items per order.
 --     Return (order_id, total_items) from order_items.
+select order_id, quantity as total_items from order_items;
 
 -- Q2) Compute total items per order for PAID orders only.
 --     Return (order_id, total_items). Hint: order_id IN (SELECT ... FROM orders WHERE status='paid').
-
+-- I need order_id and quantity from order_items and order_id (status 'paid' from orders); need to figure out how to join the tables...
+-- **** COME BACK TO THIS ONE
+select order_id from orders
+where status = 'paid'
+left join orders o...
+	on ;
 -- Q3) How many orders were placed per day (all statuses)?
 --     Return (order_date, orders_count) from orders.
 
