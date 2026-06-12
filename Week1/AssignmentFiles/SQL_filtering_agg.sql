@@ -11,12 +11,22 @@ select order_id, quantity as total_items from order_items;
 
 -- Q2) Compute total items per order for PAID orders only.
 --     Return (order_id, total_items). Hint: order_id IN (SELECT ... FROM orders WHERE status='paid').
--- I need order_id and quantity from order_items and order_id (status 'paid' from orders); need to figure out how to join the tables...
--- **** COME BACK TO THIS ONE
-select order_id from orders
-where status = 'paid'
-left join orders o...
-	on ;
+select order_items.order_id, sum(order_items.quantity) as total_items from order_items
+left join orders ON order_items.order_id = orders.order_id
+where orders.status = 'paid'
+group by order_items.order_id;
+
+-- Subquery use:
+
+
+select order_id, sum(quantity) as total_items	
+from order_items
+where order_id in (select order_id
+from orders
+where status = 'paid')
+group by order_id;
+
+	
 -- Q3) How many orders were placed per day (all statuses)?
 --     Return (order_date, orders_count) from orders.
 
