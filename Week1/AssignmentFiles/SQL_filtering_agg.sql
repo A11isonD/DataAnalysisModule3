@@ -7,7 +7,9 @@ USE coffeeshop_db;
 
 -- Q1) Compute total items per order.
 --     Return (order_id, total_items) from order_items.
-select order_id, quantity as total_items from order_items;
+select order_id, sum(quantity) as total_items from order_items
+group by order_id
+order by order_id;
 
 -- Q2) Compute total items per order for PAID orders only.
 --     Return (order_id, total_items). Hint: order_id IN (SELECT ... FROM orders WHERE status='paid').
@@ -17,7 +19,6 @@ where orders.status = 'paid'
 group by order_items.order_id;
 
 -- Subquery use:
-
 
 select order_id, sum(quantity) as total_items	
 from order_items
@@ -29,9 +30,26 @@ group by order_id;
 	
 -- Q3) How many orders were placed per day (all statuses)?
 --     Return (order_date, orders_count) from orders.
+-- need order_datetime from orders
+-- need the number of orders
+-- group by order_date  - group by has a hierarchy - if you put it at the front, you need to put it at the end, too.
+-- sort by date (using order by)   
+-- select order_datetime
+select order_datetime as order_date, sum(quantity) as orders_count
+from orders 
+inner join order_items on orders.order_id = order_items.order_id
+group by order_date;
+-- I know this isn't completely correct. I cannot figure out how to get a sum for each day (yet). I would keep trying if I had unlimited time but I must go on to other questions in order to finish the assignment.  
+
+
 
 -- Q4) What is the average number of items per PAID order?
 --     Use a subquery or CTE over order_items filtered by order_id IN (...).
+-- select avg, where status = 'paid'. Need a subquery
+select avg(quantity) as avg_quantity from order_items 
+where order_id in (select order_id
+from orders
+where status = 'paid');
 
 -- Q5) Which products (by product_id) have sold the most units overall across all stores?
 --     Return (product_id, total_units), sorted desc.
@@ -61,3 +79,25 @@ group by order_id;
 
 
 -- ================
+
+SELECT DISTINCT c.customer_id, c.first_name, c.last_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+WHERE oi.product_id IN (    
+SELECT product_id    
+FROM products    
+WHERE category_id = (        
+SELECT category_id        
+FROM categories        
+WHERE name = 'Roasting Equipment'    
+)
+); 
+
+
+SELECT product_id, name, price
+FROM products
+WHERE price > (    
+SELECT AVG(price)    
+FROM products
+);
